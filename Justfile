@@ -1,7 +1,7 @@
 
 # Define variables
 containers := "fedora-1 fedora-2"
-ssh_key := "id_ed25519.pub"
+ssh_key := "id_ed25519"
 image_name := "fedora_ssh"
 inventory_file := "inventory.yaml"
 
@@ -15,7 +15,7 @@ build-image:
 
 # Rule to create and start containers
 start-containers:
-    docker network create ansible_network || true
+    docker network create ansible-net || true
     for container in {{containers}}; do \
         docker run -d --name $container --network ansible-net {{image_name}}; \
     done
@@ -44,3 +44,4 @@ test-setup:
 
 os-update:
     ansible-playbook all os-update.yaml
+
