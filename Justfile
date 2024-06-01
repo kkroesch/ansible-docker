@@ -1,10 +1,11 @@
 
 # Define variables
 containers := "fedora-1 fedora-2"
-ssh_key := "id_ed25519"
+ssh_key := ".ssh/id_ed25519"
 image_name := "fedora_ssh"
 inventory_file := "inventory.yaml"
-ssh-config := "ssh_conf"
+ssh_config := ".ssh/config"
+
 
 # Rule to generate SSH keys
 generate-ssh-keys:
@@ -34,21 +35,21 @@ update-inventory:
     done
 
 # Create an project specific SSH configuration
-update-ssh-config:
-    touch {{ ssh-config }}
+update-ssh-config :
+    touch {{  ssh_config  }}
     for container in {{containers}}; do \
         ip=$(docker inspect -f '{{"{{"}}range.NetworkSettings.Networks{{"}}"}}{{"{{"}}.IPAddress{{"}}"}}{{"{{"}}end{{"}}"}}' $container); \
-        echo "Host $container" >> {{ssh-config}}; \
-        echo "    Hostname $ip" >> {{ssh-config}}; \
-        echo "    User root" >> {{ssh-config}}; \
-        echo "    IdentityFile {{ ssh_key }}" >> {{ssh-config}}; \
-        echo "    StrictHostKeyChecking no" >> {{ssh-config}}; \
-        echo ""  >> {{ssh-config}}; \
+        echo "Host $container" >> {{ ssh_config }}; \
+        echo "    Hostname $ip" >> {{ ssh_config }}; \
+        echo "    User root" >> {{ ssh_config }}; \
+        echo "    IdentityFile {{ ssh_key }}" >> {{ ssh_config }}; \
+        echo "    StrictHostKeyChecking no" >> {{ ssh_config }}; \
+        echo ""  >> {{ ssh_config }}; \
     done
 
 # interactively login to one node
 ssh node:
-    @ssh -F ./ssh_conf {{ node}}
+    @ssh -F {{  ssh_config  }} {{ node}}
 
 # Complete setup rule
 setup:
