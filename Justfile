@@ -57,9 +57,25 @@ setup:
     just start-containers
     just update-inventory
 
+# Test setup
 test-setup:
     ansible all -m ping
 
+# Run update playbook
 os-update:
     ansible-playbook all os-update.yaml
 
+# Stop containers
+shutdown:
+    for container in {{containers}}; do \
+        docker stop $container; \
+    done
+
+# Remove containers
+cleanup:
+    docker container prune
+
+# Stop and remove containers
+destroy:
+    just shutdown
+    just cleanup
