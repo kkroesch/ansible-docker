@@ -23,3 +23,7 @@ cc2cfe95a724   fedora_ssh   "/usr/sbin/sshd -D"   About an hour ago   Up About a
 
 Run the `just update-ssh-config` command to create a new local SSH configuration. After that you should be able to login for example with `just ssh fedora-1`.
 
+## Testing
+
+`just test` the setup or run `ansible-playbook os-update.yaml`.
+
