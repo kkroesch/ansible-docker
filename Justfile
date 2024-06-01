@@ -75,7 +75,8 @@ shutdown:
 cleanup:
     docker container prune
 
-# Stop and remove containers
+# Stop and remove containers, remove generated files
 destroy:
     just shutdown
     just cleanup
+    rm id_ed25519 id_ed25519.pub ssh_conf inventory.yaml
