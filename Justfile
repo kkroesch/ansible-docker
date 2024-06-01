@@ -64,7 +64,7 @@ test-setup:
 
 # Run update playbook
 os-update:
-    ansible-playbook all os-update.yaml
+    ansible-playbook playbooks/all os-update.yaml
 
 # Stop containers
 shutdown:
