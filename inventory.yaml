@@ -1,8 +1,0 @@
-all:
-  vars:
-    ansible_user: root
-  hosts:
-    fedora-1:
-      ansible_host: 172.18.0.2
-    fedora-2:
-      ansible_host: 172.18.0.3

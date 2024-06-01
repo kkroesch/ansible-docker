@@ -4,6 +4,7 @@ containers := "fedora-1 fedora-2"
 ssh_key := "id_ed25519"
 image_name := "fedora_ssh"
 inventory_file := "inventory.yaml"
+ssh-config := "ssh_conf"
 
 # Rule to generate SSH keys
 generate-ssh-keys:
@@ -31,6 +32,23 @@ update-inventory:
         echo "    $container:" >> {{inventory_file}}; \
         echo "      ansible_host: $ip" >> {{inventory_file}}; \
     done
+
+# Create an project specific SSH configuration
+update-ssh-config:
+    touch {{ ssh-config }}
+    for container in {{containers}}; do \
+        ip=$(docker inspect -f '{{"{{"}}range.NetworkSettings.Networks{{"}}"}}{{"{{"}}.IPAddress{{"}}"}}{{"{{"}}end{{"}}"}}' $container); \
+        echo "Host $container" >> {{ssh-config}}; \
+        echo "    Hostname $ip" >> {{ssh-config}}; \
+        echo "    User root" >> {{ssh-config}}; \
+        echo "    IdentityFile {{ ssh_key }}" >> {{ssh-config}}; \
+        echo "    StrictHostKeyChecking no" >> {{ssh-config}}; \
+        echo ""  >> {{ssh-config}}; \
+    done
+
+# interactively login to one node
+ssh node:
+    @ssh -F ./ssh_conf {{ node}}
 
 # Complete setup rule
 setup:
