@@ -5,7 +5,7 @@ RUN dnf install -y openssh-server procps && \
 
 RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
 
-COPY id_ed25519.pub /root/.ssh/authorized_keys
+COPY .ssh/id_ed25519.pub /root/.ssh/authorized_keys
 RUN chmod 600 /root/.ssh/authorized_keys
 
 # Generate SSH host keys
