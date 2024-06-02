@@ -5,7 +5,12 @@
 
   tasks:
     - name: Update all packages
-      dnf:
+      ansible.builtin.dnf:
         name: '*'
         state: latest
         update_cache: yes
+
+    - name: Ensure all packages are up-to-date
+      assert:
+        that:
+          - ansible_facts.packages_up_to_date is defined

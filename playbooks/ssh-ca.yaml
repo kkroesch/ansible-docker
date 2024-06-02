@@ -1,0 +1,48 @@
+---
+- name: Set up SSH CA
+  hosts: all
+  become: yes
+
+  vars:
+    ca-domain: "kroesch.net"
+    ssh_user_ca_pub: "{{ lookup('file', '../.ssh/ssh_user_ca.pub') }}"
+    ssh_host_ca_cert: "{{ lookup('file', '/etc/ssh/ssh_host_ca-cert.pub') }}"
+
+  tasks:
+    - name: Copy SSH User CA public key to the server
+      copy:
+        src: "{{ ssh_user_ca_pub }}"
+        dest: /etc/ssh/ssh_user_ca.pub
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Configure TrustedUserCAKeys in sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?TrustedUserCAKeys'
+        line: 'TrustedUserCAKeys /etc/ssh/ssh_user_ca.pub'
+        state: present
+        backup: yes
+
+    - name: Ensure /etc/ssh/ssh_known_hosts exists
+      file:
+        path: /etc/ssh/ssh_known_hosts
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Add CA certificate to ssh_known_hosts
+      lineinfile:
+        path: /etc/ssh/ssh_known_hosts
+        line: "@cert-authority *.{{ ca-domain }} {{ ssh_host_ca_cert }}"
+        create: yes
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Restart SSH service
+      service:
+        name: sshd
+        state: restarted

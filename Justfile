@@ -81,3 +81,15 @@ destroy:
     just shutdown
     just cleanup
     rm id_ed25519 id_ed25519.pub ssh_conf inventory.yaml
+
+# Generate Passphrase and store it in .passphrase
+passphrase:
+    password=$(xkcdpass -n 4) && echo $password > .passphrase
+    chmod 600 .passphrase
+
+ssh-ca:
+    @ssh-keygen -N '' -t ed25519 -b 4096 -f .ssh/ssh_user_ca
+    @ssh-keygen -N '' -t ed25519 -b 4096 -f .ssh/ssh_host_ca
+    @ssh-keygen -s .ssh/ssh_host_ca -I ansible-ca -h -n ca.kroesch.net -V +90d .ssh/ssh_host_ca.pub
+    @ssh-keygen -Lf .ssh/ssh_host_ca-cert.pub
+    
